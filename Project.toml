@@ -1,0 +1,14 @@
+name = "NeuronImpulses"
+uuid = "8aa6ee02-0109-406e-9f99-5568d3f7d116"
+authors = ["ChristianGynnild <75206913+ChristianGynnild@users.noreply.github.com>"]
+version = "0.1.0"
+
+[deps]
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
+SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
+
+[compat]
+LinearAlgebra = "1.11.0"
+Plots = "1.40.11"
+SparseArrays = "1.11.0"
