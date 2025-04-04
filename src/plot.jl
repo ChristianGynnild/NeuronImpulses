@@ -40,14 +40,14 @@ Plots.savefig("figures/linear-cable-crank-nicolson")
 
 
 errors = hcat(
-    abs.(mean(result_explicit_euler-result_analytical, dims=1)'),
-    abs.(mean(result_implicit_euler-result_analytical, dims=1)'),
-    abs.(mean(result_crank_nicolson-result_analytical, dims=1)')
+    (mean(abs.(result_explicit_euler-result_analytical), dims=1)'),
+    (mean(abs.(result_implicit_euler-result_analytical), dims=1)'),
+    (mean(abs.(result_crank_nicolson-result_analytical), dims=1)')
 )
 
-println("Plotting error for implicit euler linear cable equation solution")
+println("Plotting errors")
 Plots.plot(LinRange(0, NeuronImpulses.time, NeuronImpulses.iterations), errors, label=["euler explicit" "euler implicit" "crank nicolson"])
-Plots.ylims!(0,0.1)
+#Plots.ylims!(0,0.2)
 xlabel!("Time")
 ylabel!("Average error")
 title!("Error of numerical methods for non linear cable equation")
@@ -55,6 +55,21 @@ Plots.savefig("figures/error")
 
 
 
+
+function plot_start(name, result)
+    Plots.plot(x,result[:,1])
+    Plots.savefig("figures/$(name)1")
+
+    Plots.plot(x,result[:,2])
+    Plots.savefig("figures/$(name)2")
+end
+
+
+plot_start("linear-cable-explicit-euler-start", result_explicit_euler)
+plot_start("linear-cable-implicit-euler-start", result_implicit_euler)
+plot_start("linear-cable-crank-nicolson-start", result_crank_nicolson)
+
+print("errors:$(sum(errors, dims=1))")
 
 #for i in 0:5
 #    Plots.plot(x, result[:,round(Int, 1 + (N-1)/6*i)])

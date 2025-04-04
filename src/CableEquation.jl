@@ -1,12 +1,20 @@
 import Plots
 using SparseArrays
 using LinearAlgebra
+using ProgressBars
 
-a, b = -1, 1
-N::Int = 101
+use_progressbar = true
+
+if (!use_progressbar)
+    ProgressBar = (x -> x)
+end
+
+
+a, b = -2, 4
+N::Int = 101*5
 Δx = (b-a)/N
-iterations = 2000
-time = 0.1
+iterations = 20000*5
+time = 0.1*3
 Δt = time/iterations
 e = MathConstants.e
 μ = (a+b)/2
@@ -38,7 +46,7 @@ export linear_cable_analytical
 
 function linear_cable_explicit_euler(V0::AbstractVector{T}) where {T}
     k1 = λ^2*α/τ
-    k2 = -((2*λ^2*α + Δt)/τ + 1)
+    k2 = ((-2*λ^2*α - Δt)/τ + 1)
 
     A = spdiagm(
         -1=> ones(N-1)*k1, 
@@ -52,7 +60,7 @@ function linear_cable_explicit_euler(V0::AbstractVector{T}) where {T}
     result = Array{T}(undef, N, iterations)
     value = V0
 
-    for i in 1:iterations
+    for i in ProgressBar(1:iterations)
         result[:,i] = value
         value = A*value
     end
@@ -69,24 +77,32 @@ function linear_cable_implicit_euler(V0::AbstractVector{T}) where {T}
          1=> ones(N-1)*k3, 
                  )
 
+    #print(B)
+
     B[1, 2] = 2*k3
     B[N, N-1] = 2*k3
 
     B_inv = inv(Matrix(B))
 
-    result = Array{T}(undef, N, 0)
+    result = Array{T}(undef, N, iterations)
     value = V0
 
-    for _ in 1:iterations
-        result = hcat(result, value)
-        value = B_inv*value
+    println("Dims:$(size(value'))")
+    println("Dims:$(size(B))")
+
+    
+
+    for i in ProgressBar(1:iterations)
+        result[:,i] = value
+        #value =  B \ value
+        value =  B_inv * value
     end
     return result
 end
 
 function linear_cable_crank_nicolson(V0::AbstractVector{T}) where {T}
     k1 = λ^2*α/τ
-    k2 = -((2*λ^2*α + Δt)/τ + 1)
+    k2 = ((-2*λ^2*α - Δt)/τ + 1)
 
     A = spdiagm(
         -1=> ones(N-1)*k1, 
@@ -115,7 +131,7 @@ function linear_cable_crank_nicolson(V0::AbstractVector{T}) where {T}
     result = Array{T}(undef, N, iterations)
     value = V0
 
-    for i in 1:iterations
+    for i in ProgressBar(1:iterations)
         result[:,i] = value
         value = C*value
     end
